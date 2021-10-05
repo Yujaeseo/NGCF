@@ -8,3 +8,5 @@ if __name__ == '__main__':
 
     data.read_dataset()
 
+    data.create_adj_mat()
+    data.get_adj_mat()

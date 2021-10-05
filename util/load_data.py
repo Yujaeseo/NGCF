@@ -71,3 +71,39 @@ class Data():
                     self.test_set[uid] = test_items
 
         print('Train sparse matrix nonzeros {}'.format(self.R.count_nonzero()))
+
+    def create_adj_mat(self):
+        adj_mat = sp.lil_matrix((self.n_users + self.n_items, self.n_users + self.n_items), dtype = np.float32)
+        print(adj_mat.nonzero())
+        R = self.R.tolil()
+
+        adj_mat[:self.n_users, self.n_users:] = R
+        adj_mat[self.n_users:, :self.n_users] = R.T
+        adj_mat = adj_mat.todok()
+
+        def get_normalized_adj_mat (adj):
+            row_sum = np.array(adj.sum(1))
+            # print(row_sum)
+            d_inv = np.power(row_sum, -0.5).flatten()
+            # print(d_inv)
+            d_mat_inv = sp.diags(d_inv)
+
+            norm_adj = d_mat_inv.dot(adj).dot(d_mat_inv)
+            return norm_adj
+
+        norm_adj_mat = get_normalized_adj_mat(adj_mat)
+        ngcf_norm_adj_mat = norm_adj_mat + sp.eye(adj_mat.shape[0])
+
+        return ngcf_norm_adj_mat.tocsc()
+
+    def get_adj_mat(self):
+
+        try:
+            ngcf_norm_adj_mat = sp.load_npz('./Data/' + 's_adj_mat.npz')
+            print('Loaded adjacency-matrix (shape:', ngcf_norm_adj_mat.shape, ')')
+        except Exception:
+            print('Creating adjacency-matrix...')
+            ngcf_norm_adj_mat = self.create_adj_mat()
+            sp.save_npz('./Data/' + 's_adj_mat.npz', ngcf_norm_adj_mat)
+        return ngcf_norm_adj_mat
+
