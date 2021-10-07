@@ -1,12 +1,21 @@
 import torch
 from util.load_data import *
+from util.parser import parse_args
+from NGCF.NGCF import NGCF
+
 
 if __name__ == '__main__':
-    train_file = '/Users/yu/PycharmProjects/NGCF/NGCF-PyTorch/Data/gowalla/train.txt'
-    test_file = '/Users/yu/PycharmProjects/NGCF/NGCF-PyTorch/Data/gowalla/test.txt'
-    data = Data(train_file, test_file)
+    args = parse_args()
+    train_file = args.data_path + '/' + args.dataset + '/' + args.train_file
+    test_file = args.data_path + '/' + args.dataset + '/' + args.test_file
 
+    data = Data(train_file, test_file)
     data.read_dataset()
 
     data.create_adj_mat()
-    data.get_adj_mat()
+    norm_adj = data.get_adj_mat()
+
+    args.node_dropout = eval(args.node_dropout)
+    args.message_dropout = eval(args.message_dropout)
+
+    model = NGCF(data.n_users, data.n_items, norm_adj, args)
