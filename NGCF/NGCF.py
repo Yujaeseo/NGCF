@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 import torch.nn as nn
 
@@ -20,6 +21,8 @@ class NGCF(nn.Module):
 
         self.embedding_dict, self.weight_dict = self.init_weight()
 
+        self.sparse_norm_tensor = self._convert_sp_mat_to_sp_tensor(self.norm_adj)
+
     def init_weight(self):
         initializer = nn.init.xavier_uniform_
 
@@ -38,3 +41,12 @@ class NGCF(nn.Module):
             weight_dict.update({'b_bi_{}'.format(k): nn.Parameter(initializer(torch.empty(1, layers[k+1])))})
 
         return embedding_dict, weight_dict
+
+    def _convert_sp_mat_to_sp_tensor(self, X):
+        coo = X.tocoo().astype(np.float)
+        # Indice가 꼭 int64 타입이여야 하는가
+        i = torch.LongTensor(np.mat([coo.row, coo.col]))
+        v = torch.FloatTensor(coo.data)
+        # COO 말고 다른 포멧을 썼을 때의 성능 파악
+        res = torch.sparse.FloatTensor(i, v, coo.shape)
+        return res

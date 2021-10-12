@@ -19,3 +19,10 @@ if __name__ == '__main__':
     args.message_dropout = eval(args.message_dropout)
 
     model = NGCF(data.n_users, data.n_items, norm_adj, args)
+
+    for epoch in range(args.epoch):
+        print(epoch)
+        n_batch = data.n_train_ratings // args.batch_size + 1
+
+        for idx in range(n_batch):
+            print(idx)

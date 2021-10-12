@@ -107,3 +107,5 @@ class Data():
             sp.save_npz('./Data/' + 's_adj_mat.npz', ngcf_norm_adj_mat)
         return ngcf_norm_adj_mat
 
+    def sample(self):
+        print("sample")
