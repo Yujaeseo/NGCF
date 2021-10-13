@@ -17,6 +17,7 @@ class NGCF(nn.Module):
         self.norm_adj = norm_adj
 
         self.layers = eval(args.layer_size)
+        self.n_layers = len(self.layers)
         self.decay = eval(args.regs)[0]
 
         self.embedding_dict, self.weight_dict = self.init_weight()
@@ -50,3 +51,24 @@ class NGCF(nn.Module):
         # COO 말고 다른 포멧을 썼을 때의 성능 파악
         res = torch.sparse.FloatTensor(i, v, coo.shape)
         return res
+
+    # def forward(self, users, pos_items, neg_items, drop_flag=True):
+
+        #나중에 dropout 적용하기
+        # A_hat = self.sparse_norm_tensor
+
+        # (users + items) * emb_dim
+        # ego_embeddings = torch.cat([self.embedding_dict['user_emb'], self.embedding_dict['item_emb']], 0)
+        #
+        # all_embeddings = [ego_embeddings]
+        #
+        # for k in range(self.n_layers):
+        #     side_embeddings =  torch.sparse.mm(A_hat, ego_embeddings)
+        #
+        #     sum_embeddings = torch.matmul(side_embeddings, self.weight_dict['W_gc_{}'.format(k)]) + self.weight_dict['b_bi_{}'.format(k)]
+        #     # 논문 수식이랑 다름
+        #     bi_embeddings = torch.mul(ego_embeddings, side_embeddings)
+        #     bi_embeddings = torch.matmul(bi_embeddings, self.weight_dict['W_bi_{}'.format(k)]) + self.weight_dict['b_bi_{}'.format(k)]
+
+
+

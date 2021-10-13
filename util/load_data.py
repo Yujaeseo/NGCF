@@ -1,16 +1,20 @@
 import scipy.sparse as sp
 import numpy as np
+import random as rd
 
 class Data():
 
-    def __init__(self, train_file, test_file):
+    def __init__(self, train_file, test_file, batch_size):
         self.train_file = train_file
         self.test_file = test_file
+        self.batch_size = batch_size
 
         self.n_users, self.n_items = 0, 0
         self.n_train_ratings, self.n_test_ratings = 0, 0
         self.R = None
         self.train_items, self.test_set = {}, {}
+
+        self.exist_users = []
 
     def read_dataset(self):
         # With 문 사용 => with 블록을 벗어나면 자동으로 file을 close 해줘야 한다.
@@ -20,6 +24,7 @@ class Data():
                     line = line.strip('\n').split(' ')
                     items = [int(i) for i in line[1:]]
                     uid = int(line[0])
+                    self.exist_users.append(uid)
                     self.n_users = max(self.n_users, uid)
                     self.n_items = max(self.n_items, max(items))
                     self.n_train_ratings += len(items)
@@ -97,7 +102,6 @@ class Data():
         return ngcf_norm_adj_mat.tocsc()
 
     def get_adj_mat(self):
-
         try:
             ngcf_norm_adj_mat = sp.load_npz('./Data/' + 's_adj_mat.npz')
             print('Loaded adjacency-matrix (shape:', ngcf_norm_adj_mat.shape, ')')
@@ -108,4 +112,41 @@ class Data():
         return ngcf_norm_adj_mat
 
     def sample(self):
-        print("sample")
+        if self.batch_size <= self.n_users:
+            # without replacement
+            users = rd.sample(self.exist_users, self.batch_size)
+        else:
+            # replacement
+            users = [rd.choice(self.exist_users) for _ in range(self.batch_size)]
+
+        def sample_pos_items_for_u (u, num):
+            pos_items = self.train_items[u]
+            n_pos_items = len(pos_items)
+            pos_batch = []
+            while True:
+                if len(pos_batch) == num:
+                    break
+                pos_id_idx = np.random.randint(low=0, high=n_pos_items, size = 1)[0]
+                pos_i_id = pos_items[pos_id_idx]
+
+                if pos_i_id not in pos_batch:
+                    pos_batch.append(pos_i_id)
+            return pos_batch
+
+        def sample_neg_items_for_u (u, num):
+            neg_items = []
+            while True:
+                if len(neg_items) == num:
+                    break
+                neg_id = np.random.randint(low=0, high=self.n_items,size=1)[0]
+                # 효율화할 수 있지 않을까
+                if neg_id not in self.train_items[u] and neg_id not in neg_items:
+                    neg_items.append(neg_id)
+            return neg_items
+
+        pos_items, neg_items = [], []
+        for u in users:
+            pos_items += sample_pos_items_for_u(u, 1)
+            neg_items += sample_neg_items_for_u(u, 1)
+
+        return users, pos_items, neg_items

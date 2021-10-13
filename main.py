@@ -9,7 +9,7 @@ if __name__ == '__main__':
     train_file = args.data_path + '/' + args.dataset + '/' + args.train_file
     test_file = args.data_path + '/' + args.dataset + '/' + args.test_file
 
-    data = Data(train_file, test_file)
+    data = Data(train_file, test_file, args.batch_size)
     data.read_dataset()
 
     data.create_adj_mat()
@@ -25,4 +25,4 @@ if __name__ == '__main__':
         n_batch = data.n_train_ratings // args.batch_size + 1
 
         for idx in range(n_batch):
-            print(idx)
+            users, pos_items, neg_items = data.sample()
