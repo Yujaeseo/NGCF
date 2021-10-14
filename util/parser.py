@@ -8,6 +8,7 @@ def parse_args():
     parser.add_argument('-test_file', nargs='?', default='test.txt', help='Input test file')
     parser.add_argument('-dataset', nargs='?', default='gowalla', help='Input dataset')
 
+    parser.add_argument('-lr', type = float, default=0.0001, help='Learning rate')
     parser.add_argument('-embed_size', type=int, default=64, help='Embedding size')
     parser.add_argument('-batch_size', type=int, default=1024, help='Batch size.')
     parser.add_argument('-node_dropout', nargs='?', default='[0.1]',

@@ -97,9 +97,9 @@ class Data():
             return norm_adj
 
         norm_adj_mat = get_normalized_adj_mat(adj_mat)
-        ngcf_norm_adj_mat = norm_adj_mat + sp.eye(adj_mat.shape[0])
+        # ngcf_norm_adj_mat = norm_adj_mat + sp.eye(adj_mat.shape[0])
 
-        return ngcf_norm_adj_mat.tocsc()
+        return norm_adj_mat.tocsc()
 
     def get_adj_mat(self):
         try:
