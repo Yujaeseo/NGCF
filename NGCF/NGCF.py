@@ -23,8 +23,8 @@ class NGCF(nn.Module):
 
         self.embedding_dict, self.weight_dict = self.init_weight()
 
-        self.L = self._convert_sp_mat_to_sp_tensor(self.norm_adj)
-        self.L_I = self._convert_sp_mat_to_sp_tensor(self.norm_adj + sp.eye(self.norm_adj.shape[0]))
+        self.L = self._convert_sp_mat_to_sp_tensor(self.norm_adj).to(args.device)
+        self.L_I = self._convert_sp_mat_to_sp_tensor(self.norm_adj + sp.eye(self.norm_adj.shape[0])).to(args.device)
 
         #다른 matrix도 추후에 더하기 일단은 기존 코드 그대로 진행
 
