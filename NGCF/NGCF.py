@@ -108,3 +108,6 @@ class NGCF(nn.Module):
         bpr_loss = mf_loss + emb_loss
 
         return bpr_loss
+
+    def rating(self, u_g_embeddings, pos_i_g_embeddings):
+        return torch.matmul(u_g_embeddings, pos_i_g_embeddings.t())
