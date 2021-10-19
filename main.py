@@ -4,6 +4,7 @@ from util.parser import parse_args
 from NGCF.NGCF import NGCF
 import torch.optim as optim
 from time import time
+from util.test import *
 
 if __name__ == '__main__':
     args = parse_args()
@@ -46,3 +47,6 @@ if __name__ == '__main__':
 
         t0_end = time()
         print('epoch {} : loss {} , time {}s'.format(epoch + 1, loss.item(), t0_end - t0_start))
+        users_to_test = list(data.test_set.keys())
+        ret = test_model(model, data, users_to_test, args)
+        break
