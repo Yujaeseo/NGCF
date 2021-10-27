@@ -49,4 +49,5 @@ if __name__ == '__main__':
         print('epoch {} : loss {} , time {}s'.format(epoch + 1, loss.item(), t0_end - t0_start))
         users_to_test = list(data.test_set.keys())
         ret = test_model(model, data, users_to_test, args)
+        print(ret)
         break
