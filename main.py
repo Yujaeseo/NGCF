@@ -7,17 +7,13 @@ from time import time
 from util.test import *
 
 if __name__ == '__main__':
-    args = parse_args()
+    # args = parse_args()
     args.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print("Using " + str(args.device) + " for computations")
 
-    train_file = args.data_path + '/' + args.dataset + '/' + args.train_file
-    test_file = args.data_path + '/' + args.dataset + '/' + args.test_file
-
-    data = Data(train_file, test_file, args.batch_size)
-    data.read_dataset()
-
-    data.create_adj_mat()
+    # data.read_dataset()
+    #
+    # data.create_adj_mat()
     norm_adj = data.get_adj_mat()
 
     args.node_dropout = eval(args.node_dropout)
@@ -50,4 +46,4 @@ if __name__ == '__main__':
         users_to_test = list(data.test_set.keys())
         ret = test_model(model, data, users_to_test, args)
         print(ret)
-        break
+        # break

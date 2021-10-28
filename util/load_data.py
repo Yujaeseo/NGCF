@@ -16,6 +16,9 @@ class Data():
 
         self.exist_users = []
 
+        self.read_dataset()
+        self.create_adj_mat()
+
     def read_dataset(self):
         # With 문 사용 => with 블록을 벗어나면 자동으로 file을 close 해줘야 한다.
         with open(self.train_file) as f:
