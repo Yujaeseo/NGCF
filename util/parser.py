@@ -17,6 +17,6 @@ def parse_args():
                         help='Keep probability w.r.t. message dropout (i.e., 1-dropout_ratio) for each deep layer. 1: no dropout.')
     parser.add_argument('-layer_size', nargs='?', default='[64,64,64]', help='Output sizes of every layer')
     parser.add_argument('-regs', nargs='?', default='[1e-5]', help='Regularizations.')
-    parser.add_argument('-epoch', type=int, default=10, help='Epoch')
+    parser.add_argument('-epoch', type=int, default=400, help='Epoch')
     parser.add_argument('-ks', nargs='?', default='[20, 40, 60, 80, 100]', help='Output sizes of every layer')
     return parser.parse_args()

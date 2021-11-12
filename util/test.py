@@ -60,7 +60,7 @@ def test_one_user(x):
     return get_metrics(user_pos_test, r)
 
 
-def test_model(model, data, users_to_test, args):
+def test_model(model, users_to_test, drop_flag):
     # ks = eval(args.ks)
     result = {'precision': np.zeros(len(ks)), 'recall': np.zeros(len(ks))}
 
@@ -84,7 +84,11 @@ def test_model(model, data, users_to_test, args):
         item_batch = range(data.n_items)
 
         t0 = time()
-        u_g_embeddings, pos_i_g_embeddings, _ = model(user_batch, item_batch, [], args)
+        if drop_flag == False:
+            u_g_embeddings, pos_i_g_embeddings, _ = model(user_batch, item_batch, [], drop_flag=False)
+        else:
+            u_g_embeddings, pos_i_g_embeddings, _ = model(user_batch, item_batch, [], drop_flag=True)
+
         t0 = time() - t0
 
         t1 = time()

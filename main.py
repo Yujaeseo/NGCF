@@ -31,7 +31,7 @@ if __name__ == '__main__':
         for idx in range(n_batch):
             users, pos_items, neg_items = data.sample()
 
-            u_g_embeddings, pos_i_g_embeddings, neg_i_g_embeddings = model(users, pos_items, neg_items, args)
+            u_g_embeddings, pos_i_g_embeddings, neg_i_g_embeddings = model(users, pos_items, neg_items, drop_flag=args.node_dropout)
 
             batch_loss = model.bpr_loss(u_g_embeddings, pos_i_g_embeddings, neg_i_g_embeddings)
 
@@ -43,7 +43,9 @@ if __name__ == '__main__':
 
         t0_end = time()
         print('epoch {} : loss {} , time {}s'.format(epoch + 1, loss.item(), t0_end - t0_start))
-        users_to_test = list(data.test_set.keys())
-        ret = test_model(model, data, users_to_test, args)
-        print(ret)
+
+        if (epoch+1) % 10 == 0:
+            users_to_test = list(data.test_set.keys())
+            ret = test_model(model, users_to_test, drop_flag=False)
+            print(ret)
         # break

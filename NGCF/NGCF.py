@@ -13,7 +13,7 @@ class NGCF(nn.Module):
         self.emb_dim = args.embed_size
         self.batch_size = args.batch_size
         self.node_dropout = args.node_dropout[0]
-        self.message_drop_out = args.message_dropout
+        self.message_dropout = args.message_dropout
 
         self.norm_adj = norm_adj
 
@@ -23,6 +23,7 @@ class NGCF(nn.Module):
 
         self.embedding_dict, self.weight_dict = self.init_weight()
 
+        # haha
         self.L = self._convert_sp_mat_to_sp_tensor(self.norm_adj).to(args.device)
         self.L_I = self._convert_sp_mat_to_sp_tensor(self.norm_adj + sp.eye(self.norm_adj.shape[0])).to(args.device)
 
@@ -56,11 +57,29 @@ class NGCF(nn.Module):
         res = torch.sparse.FloatTensor(i, v, coo.shape)
         return res
 
+    def sparse_dropout(self, x, rate, noise_shape):
+        random_tensor = 1 - rate
+        random_tensor += torch.rand(noise_shape).to(x.device)
+        dropout_mask = torch.floor(random_tensor).type(torch.bool)
+
+        i = x._indices()
+        v = x._values()
+
+        i = i[:, dropout_mask]
+        v = v[dropout_mask]
+
+        out = torch.sparse.FloatTensor(i, v, x.shape).to(x.device)
+
+        return out * (1. / (1 - rate))
+
     def forward(self, users, pos_items, neg_items, drop_flag=True):
 
         #나중에 dropout 적용하기
-        L_hat = self.L
-        L_I_hat = self.L_I
+        if drop_flag:
+            L_hat = self.sparse_dropout(self.L, self.node_dropout, self.L._nnz())
+            L_I_hat = self.sparse_dropout(self.L_I, self.node_dropout, self.L_I._nnz())
+        else :
+            L_hat, L_I_hat = self.L, self.L_I
 
         #(users + items) * emb_dim
         ego_embeddings = torch.cat([self.embedding_dict['user_emb'], self.embedding_dict['item_emb']], 0)
@@ -79,7 +98,7 @@ class NGCF(nn.Module):
 
             ego_embeddings = F.leaky_relu(sum_embeddings + bi_embeddings)
 
-            #dropout 추가하기
+            ego_embeddings = nn.Dropout(self.message_dropout[k])(ego_embeddings)
 
             #normalize embedding - why?
             norm_embeddings = F.normalize(ego_embeddings, p=2, dim=1)

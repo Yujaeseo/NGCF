@@ -49,8 +49,8 @@ class Data():
         # Sparse matrix format 간 비교 필요
         self.R = sp.dok_matrix((self.n_users, self.n_items), dtype=np.float32)
 
-        print('# of users     {0: 10}  # of items    {1: 10}'.format(self.n_users, self.n_items))
-        print('# of train set {0: 10}  # of test set {1: 10}'.format(self.n_train_ratings, self.n_test_ratings))
+        # print('# of users     {0: 10}  # of items    {1: 10}'.format(self.n_users, self.n_items))
+        # print('# of train set {0: 10}  # of test set {1: 10}'.format(self.n_train_ratings, self.n_test_ratings))
 
         with open(self.train_file) as f_train:
             with open(self.test_file) as f_test:
@@ -78,11 +78,11 @@ class Data():
                     uid, test_items = items[0], items[1:]
                     self.test_set[uid] = test_items
 
-        print('Train sparse matrix nonzeros {}'.format(self.R.count_nonzero()))
+        # print('Train sparse matrix nonzeros {}'.format(self.R.count_nonzero()))
 
     def create_adj_mat(self):
         adj_mat = sp.lil_matrix((self.n_users + self.n_items, self.n_users + self.n_items), dtype = np.float32)
-        print(adj_mat.nonzero())
+        # print(adj_mat.nonzero())
         R = self.R.tolil()
 
         adj_mat[:self.n_users, self.n_users:] = R
@@ -107,9 +107,9 @@ class Data():
     def get_adj_mat(self):
         try:
             ngcf_norm_adj_mat = sp.load_npz('./Data/' + 's_adj_mat.npz')
-            print('Loaded adjacency-matrix (shape:', ngcf_norm_adj_mat.shape, ')')
+            # print('Loaded adjacency-matrix (shape:', ngcf_norm_adj_mat.shape, ')')
         except Exception:
-            print('Creating adjacency-matrix...')
+            # print('Creating adjacency-matrix...')
             ngcf_norm_adj_mat = self.create_adj_mat()
             sp.save_npz('./Data/' + 's_adj_mat.npz', ngcf_norm_adj_mat)
         return ngcf_norm_adj_mat
