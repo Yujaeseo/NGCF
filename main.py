@@ -2,22 +2,13 @@ import torch
 from util.load_data import *
 from util.parser import parse_args
 from NGCF.NGCF import NGCF
+from MPT.train import Trainer
 import torch.optim as optim
 from time import time
 from util.test import *
 
-if __name__ == '__main__':
-    # args = parse_args()
-    args.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print("Using " + str(args.device) + " for computations")
 
-    # data.read_dataset()
-    #
-    # data.create_adj_mat()
-    norm_adj = data.get_adj_mat()
-
-    args.node_dropout = eval(args.node_dropout)
-    args.message_dropout = eval(args.message_dropout)
+def train():
 
     model = NGCF(data.n_users, data.n_items, norm_adj, args).to('cuda')
 
@@ -44,8 +35,29 @@ if __name__ == '__main__':
         t0_end = time()
         print('epoch {} : loss {} , time {}s'.format(epoch + 1, loss.item(), t0_end - t0_start))
 
-        if (epoch+1) % 10 == 0:
+        if (epoch+1) % 100 == 0:
             users_to_test = list(data.test_set.keys())
             ret = test_model(model, users_to_test, drop_flag=False)
             print(ret)
-        # break
+
+
+def train_mpt():
+    # Write code below
+    model = NGCF(data.n_users, data.n_items, norm_adj, args).to('cuda')
+    trainer = Trainer(model, args)
+
+
+if __name__ == '__main__':
+    # args = parse_args()
+    args.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print("Using " + str(args.device) + " for computations")
+
+    # data.read_dataset()
+    #
+    # data.create_adj_mat()
+    norm_adj = data.get_adj_mat()
+
+    args.node_dropout = eval(args.node_dropout)
+    args.message_dropout = eval(args.message_dropout)
+
+    train_mpt()

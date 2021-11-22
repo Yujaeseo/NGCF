@@ -78,7 +78,7 @@ class NGCF(nn.Module):
         if drop_flag:
             L_hat = self.sparse_dropout(self.L, self.node_dropout, self.L._nnz())
             L_I_hat = self.sparse_dropout(self.L_I, self.node_dropout, self.L_I._nnz())
-        else :
+        else:
             L_hat, L_I_hat = self.L, self.L_I
 
         #(users + items) * emb_dim
@@ -116,7 +116,7 @@ class NGCF(nn.Module):
         return u_g_embeddings, pos_i_g_embeddings, neg_i_g_embeddings
 
     def bpr_loss (self, u_g_embeddings, pos_i_g_embeddings, neg_i_g_embeddings):
-        pos_yui= torch.sum(torch.mul(u_g_embeddings, pos_i_g_embeddings), axis = 1)
+        pos_yui = torch.sum(torch.mul(u_g_embeddings, pos_i_g_embeddings), axis = 1)
         neg_yuj = torch.sum(torch.mul(u_g_embeddings, neg_i_g_embeddings), axis = 1)
 
         maxi = nn.LogSigmoid()(pos_yui - neg_yuj)
