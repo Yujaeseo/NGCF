@@ -24,7 +24,7 @@ class Trainer(object):
         self.model.L_I = self.model.L_I.half()
         self.model = self.network_to_half(self.model)
 
-
+        self.model_params, self.master_params = self.prep_param_list(self.model)
         """
         for module in self.model.modules():
             if isinstance(module, NGCF):
@@ -36,6 +36,16 @@ class Trainer(object):
         for m in self.model.children():
             print(m)
         """
+
+
+    def prep_param_list(self, model):
+        model_params = [p for p in model.parameters() if p.requires_grad]
+        master_params = [p.detach().clone().float() for p in model_params]
+
+        for p in master_params:
+            p.requires_grad = True
+
+        return model_params, master_params
 
     def network_to_half(self, model):
         """
